@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <title></title>
+  <style type="text/css">
+	* {margin:0;padding:0;}
+	body {font-size:.14rem;}
+  .trang {
+    width: .2rem;
+    height: .2rem;
+    background-size: 2.32rem .2rem;
+    background-position: 0 0;
+    animation:truth 0.3s steps(11) forwards;
+  }
+  @keyframes truth {
+    from {background-position: 0 0;}
+    to {background-position: -2.125rem 0;}
+  }
+
+  </style>
+  <script type="text/javascript">
+  	(function(value) {
+      var element = document.createElement('style');
+
+      document.head.appendChild(element);
+      element.type = 'text/css';
+      element.sheet.insertRule('html:root{font-size:0}', 0);
+
+      var sheet = element.sheet.cssRules[0].style;
+      var update = function() {
+        sheet.fontSize = Math.floor(window.innerWidth / value * 625) + '%';
+      };
+
+      window.addEventListener('resize', update);
+      window.addEventListener('load', update);
+      window.addEventListener('orientationchange', update);
+      document.addEventListener('DOMContentLoaded', update);
+      document.addEventListener('readystatechange', update);
+    })(375);
+
+    window.requestAnimFrame = (function(){
+		  return window.requestAnimationFrame ||
+	    window.webkitRequestAnimationFrame ||
+	    window.mozRequestAnimationFrame ||
+	    function(callback){
+	      window.setTimeout(callback, 1000 / 60);
+	    };
+		})();
+  </script>
+</head>
+<body>
+	<div class="wrap">
+		<canvas id="canvas" width="200" height="200"></canvas>
+	</div>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas');
+		var ctx = canvas.getContext('2d');
+
+		var step = 0;
+
+		function draw(radius, color) {
+			var offset = 20;
+			var size = 200;
+			var cos30 = Math.cos(Math.PI / 6);
+			var trangSide = size - (offset * 2);
+			var offsetX = (trangSide - (trangSide * cos30));
+			var CircleR = radius / 2;
+
+			ctx.fillStyle = 'rgb(' + color.join(',') + ')';
+
+			ctx.clearRect(0, 0, size, size);
+			ctx.beginPath();
+
+			// top
+			var tCircleCenterX = offsetX + offset + CircleR;
+			var tCircleCenterY = offset + radius * cos30;
+			ctx.moveTo(offsetX + offset, tCircleCenterY);
+
+			// bottom
+			var bCircleCenterX = offsetX + offset + CircleR;
+			var bCircleCenterY = size - offset - (radius * cos30);
+			ctx.lineTo(offsetX + offset, bCircleCenterY);
+			ctx.arc(bCircleCenterX, bCircleCenterY, CircleR, Math.PI, Math.PI / 3, true);
+
+	    // right
+			var rightPointX = offsetX + offset + trangSide * cos30;
+	    var rCircleCenterX = rightPointX - radius;
+	    var rbx = rCircleCenterX + (CircleR / 2);
+	    var rby = (size / 2) + (CircleR * cos30);
+			ctx.lineTo(rbx, rby); // 右下切点
+			ctx.arc(rCircleCenterX, (size / 2), CircleR, Math.PI / 3, -Math.PI / 3, true);
+
+			// back
+			var ttx = tCircleCenterX + (CircleR / 2);
+			var tty = tCircleCenterY - (CircleR * cos30);
+			ctx.lineTo(ttx, tty);
+			ctx.arc(tCircleCenterX, tCircleCenterY, CircleR, -Math.PI / 3, Math.PI, true);
+
+			ctx.closePath();
+			ctx.fill();
+		}
+
+
+		var R = 255;
+		var G = 0;
+		var B = 0;
+
+		(function animloop(){
+		  requestAnimFrame(animloop);
+
+		  step += 2;
+		  var radius = 20 + (72 * Math.sin(Math.PI * (step % 180 / 180)));
+
+		  // 255, 0, 0
+		  // B:0->255
+		  // R:255->0
+		  // G:0->255
+
+		  var cur = Math.floor(step / 255) % 3;
+		  var loop = step % 255;
+
+		  if (cur === 0) B = loop;
+		  if (cur === 1) R = 255 - loop;
+		  if (cur === 2) G = loop;
+
+		  console.log([R, G, B]);
+
+		  draw(20, [R, G, B]);
+		})();
+	</script>
+</body>
+</html>
